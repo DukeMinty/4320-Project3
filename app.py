@@ -9,12 +9,9 @@
 # if __name__ == '__main__':
 #     app.run(debug=True)
 
-
-##Api Key : SI1O16E6XH389GHD
 from datetime import datetime
-from flask inport Flask, render_template, request
-#import pygal
-from py
+import requests
+apiKey = "SI1O16E6XH389GHD"
 
 print("Stock Data Visualizer")
 print("---------------------")
@@ -74,3 +71,19 @@ while True:
         continue
 
     break
+
+# replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
+url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo'
+
+
+if(timeSeries == "1"):
+    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={}&interval=5min&apikey={}'.format(symbol, apiKey)
+    r = requests.get(url)
+    data = r.json()
+
+if(timeSeries == "2"):
+    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}'.format(symbol, apiKey)
+    r = requests.get(url)
+    data = r.json()
+
+print(data)
