@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import pygal
 import webbrowser
@@ -47,9 +47,9 @@ def get_start_date_limit(time_series):
 
         match time_series:
             case "1":
-                start_date_limit = None
+                start_date_limit = datetime.now() - timedelta(days=1)
             case "2": 
-                start_date_limit = datetime(2025, 1, 1)
+                start_date_limit = datetime(2025, 6, 10)
             case "3":
                 start_date_limit = datetime(2000, 1, 1)
             case "4": 
@@ -66,14 +66,11 @@ while True:
         # Check if there's a start date limit for the selected time series
         start_date_limit = get_start_date_limit(time_series).date()
 
-        if (start_date_limit == None):
+        # Determine if the start date is within the supported date range and re-prompt if needed
+        if (start_date >= start_date_limit):
             break
         else:
-            # Determine if the start date is within the supported date range and re-prompt if needed
-            if (start_date >= start_date_limit):
-                break
-            else:
-                print(f"\nThis time series does not support data before {start_date_limit}. Please enter a later date.")                
+            print(f"\nThis time series does not support data before {start_date_limit}. Please enter a later date.")                
 
     except ValueError:
         print("\nInvalid date format. Please enter date as YYYY-MM-DD.")
