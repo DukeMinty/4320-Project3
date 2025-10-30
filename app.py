@@ -41,12 +41,40 @@ while True:
 
     print("\nInvalid selection. Please enter 1, 2, 3, or 4.")
 
+# Get start date limit based on the selected time series
+def get_start_date_limit(time_series):
+        start_date_limit = None
+
+        match time_series:
+            case "1":
+                start_date_limit = None
+            case "2": 
+                start_date_limit = datetime(2025, 1, 1)
+            case "3":
+                start_date_limit = datetime(2000, 1, 1)
+            case "4": 
+                start_date_limit = datetime(2000, 1, 1)
+
+        return start_date_limit
+
 # Validate start date
 while True:
     start_str = input("\nEnter the start date (YYYY-MM-DD): ")
     try:
         start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
-        break
+        
+        # Check if there's a start date limit for the selected time series
+        start_date_limit = get_start_date_limit(time_series).date()
+
+        if (start_date_limit == None):
+            break
+        else:
+            # Determine if the start date is within the supported date range and re-prompt if needed
+            if (start_date >= start_date_limit):
+                break
+            else:
+                print(f"\nThis time series does not support data before {start_date_limit}. Please enter a later date.")                
+
     except ValueError:
         print("\nInvalid date format. Please enter date as YYYY-MM-DD.")
 
