@@ -51,7 +51,7 @@ def get_start_date_limit(time_series):
             case "2": 
                 start_date_limit = datetime(2025, 6, 10)
             case "3":
-                start_date_limit = datetime(2000, 1, 1)
+                start_date_limit = datetime(2004, 8, 27)
             case "4": 
                 start_date_limit = datetime(2000, 1, 1)
 
@@ -66,11 +66,15 @@ while True:
         # Check if there's a start date limit for the selected time series
         start_date_limit = get_start_date_limit(time_series).date()
 
+        # Compare start date with current date
+        if (start_date > datetime.now().date()):
+            print(f"\nStart date cannot be later than today's date. Please enter a date earlier or equal to today's date ({datetime.now().strftime("%Y-%m-%d")}).")     
+            continue
         # Determine if the start date is within the supported date range and re-prompt if needed
         if (start_date >= start_date_limit):
-            break
+            break           
         else:
-            print(f"\nThis time series does not support data before {start_date_limit}. Please enter a later date.")                
+            print(f"\nThis time series does not support data before {start_date_limit}. Please enter a later date.")            
 
     except ValueError:
         print("\nInvalid date format. Please enter date as YYYY-MM-DD.")
