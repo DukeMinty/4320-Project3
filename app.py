@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import pygal
 import webbrowser
@@ -46,12 +46,25 @@ while True:
 
     print("\nInvalid selection. Please enter 1, 2, 3, or 4.")
 
+# Set the start date limit based on API documentation
+start_date_limit = datetime(2000, 1, 1).date()
+
 # Validate start date
 while True:
     start_str = input("\nEnter the start date (YYYY-MM-DD): ")
     try:
         start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
-        break
+
+        # Compare start date with current date
+        if (start_date > datetime.now().date()):
+            print(f"\nStart date cannot be later than today's date. Please enter a date earlier or equal to today's date ({datetime.now().strftime("%Y-%m-%d")}).")     
+            continue
+        # Determine if the start date is within the supported date range and re-prompt if needed
+        if (start_date >= start_date_limit):
+            break           
+        else:
+            print(f"\nData before {start_date_limit} is not supported. Please enter a later or equal date.")         
+
     except ValueError:
         print("\nInvalid date format. Please enter date as YYYY-MM-DD.")
 
@@ -70,13 +83,22 @@ while True:
 
     break
 
+# Get the start month for intraday time series
+def get_start_year_month(start_date):
+    # year = str(start_date.year)
+    year = start_date.strftime("%Y")
+    month = start_date.strftime("%m")
+    return (year + "-" + month)
+
+# Create URL endpoints for API requests
 if time_series == "1":
     function = "TIME_SERIES_INTRADAY"
     interval = "5min"
-    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}'
+    month = get_start_year_month(start_date)
+    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&outputsize=full&interval={interval}&month={month}&apikey={api_key}'
 elif time_series == "2":
     function = "TIME_SERIES_DAILY"
-    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}'
+    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&outputsize=full&apikey={api_key}'
 elif time_series == "3":
     function = "TIME_SERIES_WEEKLY"
     url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}'
