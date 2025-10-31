@@ -11,6 +11,11 @@ print("---------------------")
 
 symbol = input("\nEnter the stock symbol you are looking for: ")
 
+#error check for valid stock symbol
+if not symbol.isalpha():
+    print("\nError: stock symbols must contain letters only")
+    exit(1)
+
 # Validate chart type
 while True:
     print("\nChart Types")
@@ -82,6 +87,25 @@ elif time_series == "4":
 r = requests.get(url)
 data = r.json()
 
+# err check: network/api failure
+if r.status_code != 200:
+    print("\nError: Failed to retrieve data from API")
+    exit(1)
+
+if not isinstance(data,dict):
+    print("\nError: Unexpected API response")
+    exit(1)
+
+# err checks: api error / rate-limit notice
+if "Error Message" in data:
+    print("\nError: Invalid symbol or API request")
+    exit(1)
+
+if "Note" in data:
+    print("\nAPI rate limit reached, please try again later")
+    exit(1)
+
+
 #Checking for valid data
 time_series_key = None
 for key in data:
@@ -114,6 +138,12 @@ for date_str in sorted(raw_series.keys(), reverse=False):
         high_prices.append(float(raw_series[date_str]['2. high']))
         low_prices.append(float(raw_series[date_str]['3. low']))
         close_prices.append(float(raw_series[date_str]['4. close']))
+
+# error check: no data in selected range
+if not dates:
+    print("\nError: No stock data found for the selected date range")
+    exit(1)
+
 
 # Create chart
 if chart_type == "1":
