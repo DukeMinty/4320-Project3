@@ -41,30 +41,14 @@ while True:
 
     print("\nInvalid selection. Please enter 1, 2, 3, or 4.")
 
-# Get start date limit based on the selected time series
-def get_start_date_limit(time_series):
-        start_date_limit = None
-
-        match time_series:
-            case "1":
-                start_date_limit = datetime.now() - timedelta(days=1)
-            case "2": 
-                start_date_limit = datetime(2025, 6, 10)
-            case "3":
-                start_date_limit = datetime(2004, 8, 27)
-            case "4": 
-                start_date_limit = datetime(2000, 1, 1)
-
-        return start_date_limit
+# Set the start date limit based on API documentation
+start_date_limit = datetime(2000, 1, 1).date()
 
 # Validate start date
 while True:
     start_str = input("\nEnter the start date (YYYY-MM-DD): ")
     try:
         start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
-        
-        # Check if there's a start date limit for the selected time series
-        start_date_limit = get_start_date_limit(time_series).date()
 
         # Compare start date with current date
         if (start_date > datetime.now().date()):
@@ -74,7 +58,7 @@ while True:
         if (start_date >= start_date_limit):
             break           
         else:
-            print(f"\nThis time series does not support data before {start_date_limit}. Please enter a later date.")            
+            print(f"\nData before {start_date_limit} is not supported. Please enter a later or equal date.")         
 
     except ValueError:
         print("\nInvalid date format. Please enter date as YYYY-MM-DD.")
@@ -94,13 +78,22 @@ while True:
 
     break
 
+# Get the start month for intraday time series
+def get_start_year_month(start_date):
+    # year = str(start_date.year)
+    year = start_date.strftime("%Y")
+    month = start_date.strftime("%m")
+    return (year + "-" + month)
+
+# Create URL endpoints for API requests
 if time_series == "1":
     function = "TIME_SERIES_INTRADAY"
     interval = "5min"
-    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}'
+    month = get_start_year_month(start_date)
+    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&outputsize=full&interval={interval}&month={month}&apikey={api_key}'
 elif time_series == "2":
     function = "TIME_SERIES_DAILY"
-    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}'
+    url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&outputsize=full&apikey={api_key}'
 elif time_series == "3":
     function = "TIME_SERIES_WEEKLY"
     url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}'
