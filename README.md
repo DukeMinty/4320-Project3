@@ -1,3 +1,5 @@
 # 4320-Project3
 
-# Pushing this change to text commits
+## Stock Data Visualizer
+
+This project utilizes Alpha Vantage APIs to visualize stock data.
